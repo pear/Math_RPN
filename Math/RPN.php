@@ -130,7 +130,8 @@ class Math_Rpn
      * @return object PEAR error
      * @access private
      */
-    function _raiseError ($error) {
+    function _raiseError($error)
+    {
         return PEAR::raiseError($error);
     }
 
@@ -140,9 +141,10 @@ class Math_Rpn
      * @return array Array with operator's name, priority, arguments, function's name and syntax
      * @access public
      */
-    function getOperators () {
+    function getOperators()
+    {
         $return = array();
-        while(list($key, $val) = each($this->_operation)) {
+        while (list($key, $val) = each($this->_operation)) {
 
             if (array_key_exists (2, $val) && $val[2] == 2) {
                 $syntax = 'A ' . $key . ' B';
@@ -155,7 +157,7 @@ class Math_Rpn
                 $arguments = 0;
             }
 
-            if(array_key_exists (3, $val)) $function = $val[3]; else $function = '';
+            $function = array_key_exists (3, $val) ? $val[3] : '';
 
             $return[] = array (
                 'operator' => $key,
@@ -180,8 +182,9 @@ class Math_Rpn
      * @param string $text New operator's description
      * @access public
      */
-    function addOperator ($operator, $function_name, $priority = 3, $no_of_arg = 0, $text = '') {
-        if(preg_match("/^([\W\w]+)\:\:([\W\w]+)$/",$function_name,$match)) {
+    function addOperator($operator, $function_name, $priority = 3, $no_of_arg = 0, $text = '')
+    {
+        if (preg_match("/^([\W\w]+)\:\:([\W\w]+)$/", $function_name, $match)) {
             $class = $match[1];
             $method = $match[2];
             $function = array (
@@ -212,19 +215,23 @@ class Math_Rpn
 
         $this->_angle = (boolean) ($angle == 'rad');
 
-        if($input == '') {
+        if ($input == '') {
             $this->_error = $this->_raiseError('Empty input expression');
             return $this->_error;
         }
 
-        if(!$is_rpn) {
+        if (!$is_rpn) {
             $this->_input = $input;
 
             $this->_stringToArray ();
-            if($this->_error <> null) return $this->_error;
+            if ($this->_error <> null) {
+                return $this->_error;
+            }
 
             $this->_arrayToRpn();
-            if($this->_error <> null) return $this->_error;
+            if ($this->_error <> null) {
+                return $this->_error;
+            }
         } else {
             if (is_array($input)) {
                 $input = implode(' ', $input);
@@ -236,7 +243,9 @@ class Math_Rpn
         }
 
         $this->_rpnToValue();
-        if($this->_error <> null) return $this->_error;
+        if ($this->_error <> null) {
+            return $this->_error;
+        }
 
         return $this->_value;
     }
@@ -250,7 +259,8 @@ class Math_Rpn
      * @return mixed Value of $input expression or a PEAR error
      * @access public
      */
-    function evaluate($input = '', $angle = 'rad', $is_rpn = false) {
+    function evaluate($input = '', $angle = 'rad', $is_rpn = false)
+    {
         return $this-> calculate($input, $angle, $is_rpn);
     }
 
@@ -260,7 +270,8 @@ class Math_Rpn
      * @return array Input array
      * @access public
      */
-    function getInputArray() {
+    function getInputArray()
+    {
         return $this->_input_array;
     }
 
@@ -270,7 +281,8 @@ class Math_Rpn
      * @return array RPN array
      * @access public
      */
-    function getRpnArray() {
+    function getRpnArray()
+    {
         return $this->_output;
     }
 
@@ -280,7 +292,8 @@ class Math_Rpn
      * @return float Counting time in seconds
      * @access public
      */
-    function getTimer() {
+    function getTimer()
+    {
         return $this->_timer;
     }
 
@@ -293,20 +306,29 @@ class Math_Rpn
      * @return boolean true when $key is a key of $array, or false
      * @access private
      */
-
-    function _keyExists($key,$array,$type) {
+    function _keyExists($key, $array, $type)
+    {
         $keys = array_keys($array);
 
-        if($type == 1) {
+        if ($type == 1) {
             $count = 0;
             while (list($keys_key, $keys_val) = each($keys)) {
-                if(is_integer(strpos($keys_val, $key)) && (strpos($keys_val, $key)==0)) $count++;
+                if (is_integer(strpos($keys_val, $key)) && (strpos($keys_val, $key) == 0)) {
+                    $count++;
+                }
             }
-            if(($count==1) && in_array($key,$keys)) return true;
-            else return false;
+
+            if (($count == 1) && in_array($key, $keys)) {
+                return true;
+            }
+
+            return false;
         } else {
-            if(in_array($key,$keys)) return true;
-            else return false;
+            if (in_array($key, $keys)) {
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -317,13 +339,17 @@ class Math_Rpn
      * @return boolean true when $value is nan, or false
      * @access private
      */
-    function _isNan($value) {
-        if(function_exists('is_nan')) {
+    function _isNan($value)
+    {
+        if (function_exists('is_nan')) {
             return is_nan($value);
-        } else {
-            if((substr($value,-3) == 'IND') || (substr($value,-3) == 'NAN')) return true;
-            else return false;
         }
+
+        if ((substr($value,-3) == 'IND') || (substr($value,-3) == 'NAN')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -334,12 +360,15 @@ class Math_Rpn
      * @access private
      */
     function _isInfinite($value) {
-        if(function_exists('is_finite')) {
+        if (function_exists('is_finite')) {
             return !is_finite($value);
-        } else {
-            if(substr($value,-3) == 'INF') return true;
-            else return false;
         }
+
+        if (substr($value, -3) == 'INF') {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -348,13 +377,14 @@ class Math_Rpn
      * @return array Input expression changed into array
      * @access private
      */
-    function _stringToArray () {
+    function _stringToArray ()
+    {
         $temp_operator = null;
         $temp_value = null;
 
         $this->_input = str_replace(" ","",$this->_input);
 
-        for($i = 0; $i < strlen($this->_input); $i++) {
+        for ($i = 0; $i < strlen($this->_input); $i++) {
             if ($this->_input[$i] == ' ') {
                 if ($temp_operator != null) {
                     array_push($this->_input_array, $temp_operator);
@@ -411,7 +441,8 @@ class Math_Rpn
      * @return object Null or a PEAR Error
      * @access private
      */
-    function _testInput() {
+    function _testInput()
+    {
         if (!count($this->_input_array)) {
             $this->_input_array = null;
             $this->_error = $this->_raiseError('Undefined input array');
@@ -447,7 +478,8 @@ class Math_Rpn
      * @param string $value Value to add into stack
      * @access private
      */
-    function _stackAdd($value) {
+    function _stackAdd($value)
+    {
         array_push($this->_stack, $value);
     }
 
@@ -457,7 +489,8 @@ class Math_Rpn
      * @return string Value deleted from stack
      * @access private
      */
-    function _stackDelete() {
+    function _stackDelete()
+    {
         return array_pop($this->_stack);
     }
 
@@ -468,7 +501,8 @@ class Math_Rpn
      * @return integer Priority
      * @access private
      */
-    function _priority($value) {
+    function _priority($value)
+    {
         return $this->_operation[$value][1];
     }
     /**
@@ -477,7 +511,8 @@ class Math_Rpn
      * @return integer Priority of operator from stack's top
      * @access private
      */
-    function _stackPriority() {
+    function _stackPriority()
+    {
         $value = $this->_stackDelete();
         $this->_stackAdd($value);
         return $this->_priority($value);
@@ -489,11 +524,13 @@ class Math_Rpn
      * @return boolean Stack is empty (true) or not (false)
      * @access private
      */
-    function _stackEmpty() {
+    function _stackEmpty()
+    {
         if (count($this->_stack)) {
             return false;
         }
-        else return true;
+
+        return true;
     }
 
     /**
@@ -502,7 +539,8 @@ class Math_Rpn
      * @param string $value Value to add into output array
      * @access private
      */
-    function _outputAdd($value) {
+    function _outputAdd($value)
+    {
         if ($value<>'(') {
             array_push($this->_output, $value);
         }
@@ -514,8 +552,8 @@ class Math_Rpn
      * @return array Array with RPN expression
      * @access private
      */
-    function _arrayToRpn() {
-
+    function _arrayToRpn()
+    {
         if ($this->_error <> null) {
             $this->_output = array();
             return $this->_output;
@@ -565,7 +603,8 @@ class Math_Rpn
      * @return integer Position of the first operator
      * @access private
      */
-    function _nextOperator($array) {
+    function _nextOperator($array)
+    {
         $pos = 0;
         while(is_numeric($array[$pos])) {
             $pos++;
@@ -573,8 +612,8 @@ class Math_Rpn
                 return -1;
             }
         }
-        return $pos;
 
+        return $pos;
     }
 
     /**
@@ -587,7 +626,8 @@ class Math_Rpn
      * @return array New temporary array
      * @access private
      */
-    function _refresh($temp, $pos, $arg, $result) {
+    function _refresh($temp, $pos, $arg, $result)
+    {
         $temp1 = array_slice($temp, 0, $pos-$arg);
         $temp1[] = $result;
         $temp2 = array_slice($temp, $pos+1);
@@ -602,7 +642,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _sum($temp, $pos) {
+    function _sum($temp, $pos)
+    {
         return $temp[$pos-2]+$temp[$pos-1];
     }
 
@@ -614,7 +655,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _difference($temp, $pos) {
+    function _difference($temp, $pos)
+    {
         return $temp[$pos-2]-$temp[$pos-1];
     }
 
@@ -626,7 +668,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _multiplication($temp, $pos) {
+    function _multiplication($temp, $pos)
+    {
         return $temp[$pos-2]*$temp[$pos-1];
     }
 
@@ -638,12 +681,14 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _division($temp, $pos) {
+    function _division($temp, $pos)
+    {
         if ($temp[$pos-1]==0) {
             $this->_error = $this->_raiseError('Division by 0');
             $this->_value = null;
             return $this->_value;
         }
+
         return $temp[$pos-2]/$temp[$pos-1];
     }
 
@@ -655,7 +700,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _root($temp, $pos) {
+    function _root($temp, $pos)
+    {
         return pow($temp[$pos-1], (1/$temp[$pos-2]));
     }
 
@@ -667,7 +713,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _power($temp, $pos) {
+    function _power($temp, $pos)
+    {
         return pow($temp[$pos-2], $temp[$pos-1]);
     }
 
@@ -679,12 +726,14 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _sin($temp, $pos) {
+    function _sin($temp, $pos)
+    {
         if ($this->_angle) {
             $angle = $temp[$pos-1];
         } else {
             $angle = deg2rad($temp[$pos-1]);
         }
+
         return sin($angle);
     }
 
@@ -696,12 +745,14 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _cos($temp, $pos) {
+    function _cos($temp, $pos)
+    {
         if ($this->_angle) {
             $angle = $temp[$pos-1];
         } else {
             $angle = deg2rad($temp[$pos-1]);
         }
+
         return cos($angle);
     }
 
@@ -713,12 +764,14 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _tan($temp, $pos) {
+    function _tan($temp, $pos)
+    {
         if ($this->_angle) {
             $angle = $temp[$pos-1];
         } else {
             $angle = deg2rad($temp[$pos-1]);
         }
+
         return tan($angle);
     }
 
@@ -730,7 +783,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _asin($temp, $pos) {
+    function _asin($temp, $pos)
+    {
         $angle = asin($temp[$pos-1]);
         if (!$this->_angle) {
             $angle = rad2deg($angle);
@@ -746,7 +800,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _acos($temp, $pos) {
+    function _acos($temp, $pos)
+    {
         $angle = acos($temp[$pos-1]);
         if (!$this->_angle) {
             $angle = rad2deg($angle);
@@ -762,7 +817,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _atan($temp, $pos) {
+    function _atan($temp, $pos)
+    {
         $angle = atan($temp[$pos-1]);
         if (!$this->_angle) {
             $angle = rad2deg($angle);
@@ -778,7 +834,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _sqrt($temp, $pos) {
+    function _sqrt($temp, $pos)
+    {
         return sqrt($temp[$pos-1]);
     }
 
@@ -790,7 +847,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _exp($temp, $pos) {
+    function _exp($temp, $pos)
+    {
         return exp($temp[$pos-1]);
     }
 
@@ -802,7 +860,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _log($temp, $pos) {
+    function _log($temp, $pos)
+    {
         return log10($temp[$pos-1]);
     }
 
@@ -814,7 +873,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _ln($temp, $pos) {
+    function _ln($temp, $pos)
+    {
         return log($temp[$pos-1]);
     }
 
@@ -826,7 +886,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _const_pi($temp, $pos) {
+    function _const_pi($temp, $pos)
+    {
         return M_PI;
     }
 
@@ -838,7 +899,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _const_e($temp, $pos) {
+    function _const_e($temp, $pos)
+    {
         return M_E;
     }
 
@@ -850,7 +912,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _E($temp, $pos) {
+    function _E($temp, $pos)
+    {
         return pow(10, $temp[$pos-1]);
     }
 
@@ -862,7 +925,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _factorial($temp, $pos) {
+    function _factorial($temp, $pos)
+    {
         $factorial = 1;
         for($i=1;$i<=$temp[$pos-1];$i++) {
             $factorial *= $i;
@@ -878,7 +942,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _abs($temp, $pos) {
+    function _abs($temp, $pos)
+    {
         return abs($temp[$pos-1]);
     }
 
@@ -890,7 +955,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _mod($temp, $pos) {
+    function _mod($temp, $pos)
+    {
         return $temp[$pos-2]%$temp[$pos-1];
     }
 
@@ -902,7 +968,8 @@ class Math_Rpn
      * @return float Function's relult
      * @access private
      */
-    function _div($temp, $pos) {
+    function _div($temp, $pos)
+    {
         return floor($temp[$pos-2]/$temp[$pos-1]);
     }
 
@@ -912,8 +979,8 @@ class Math_Rpn
      * @return float Result of input expression
      * @access private
      */
-    function _rpnToValue() {
-
+    function _rpnToValue()
+    {
         $time1 = $this->_getMicroTime();
 
         if ($this->_error <> null) {
@@ -993,11 +1060,9 @@ class Math_Rpn
      * @return float Current time in seconds
      * @access private
      */
-    function _getMicroTime() {
+    function _getMicroTime()
+    {
         list($usec, $sec) = explode(" ", microtime());
         return ((float)$usec + (float)$sec);
     }
-
 }
-
-?>
